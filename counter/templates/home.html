@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+{% load static %} {% load mathfilters %} {% load humanize %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+        crossorigin="anonymous"
+    />
+    <link href="{% static 'style.css' %}" rel="stylesheet" type="text/css" />
+    <title>Foodie Calorie Finder</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <img src="{% static 'images/logo.png' %}" class="img-responsive logo mb-5 mt-5" />
+                <div class="subtitle">spice up your fitness journey with us!</div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="input-group input-group-lg mb-5">
+                        <select name="query" class="form-control inputstyle" required>
+                            <option value="" disabled selected>Search for calories in South Indian breakfasts...</option>
+                            <option value="Idli">Idli</option>
+                            <option value="Vada">Vada</option>
+                            <option value="Upma">Upma</option>
+                            <option value="Pongal">Pongal</option>
+                            <option value="Sambar">Sambar</option>
+                            <option value="Masala dosa">Masala dosa</option>
+                            <option value="Pesarattu">Pesarattu</option>
+                            <option value="Uttapam">Uttapam</option>
+                            <option value="Curd rice">Curd rice</option>
+                            <option value="Medu vada">Medu vada</option>
+                            <option value="Appam">Appam</option>
+                            <option value="Lemon rice/ Pulihora">Lemon rice/ Pulihora</option>
+                            <option value="Coconut chutney">Coconut chutney</option>
+                            <option value="Rava dosa">Rava dosa</option>
+                            <option value="Poori">Poori</option>
+                            <option value="Chapati">Chapati</option>
+                            <option value="Bonda">Bonda</option>
+                            <option value="Poha">Poha</option>
+                            <option value="Semia upma">Semia upma</option>
+                            <option value="Wheat rava upma">Wheat rava upma</option>
+                            <option value="Rice rava upma">Rice rava upma</option>
+                            <option value="Parata">Parata</option>
+                            <option value="ragi malt">ragi malt</option>
+                            <option value="ragi dosa">ragi dosa</option>
+                            <option value="Ragi chapati">Ragi chapati</option>
+                            <option value="Beetroot juice">Beetroot juice</option>
+                            <option value="Orange juice">Orange juice</option>
+                            <option value="Lemon juice">Lemon juice</option>
+                            <option value="Chiku juice">Chiku juice</option>
+                            <option value="Karela/Bittergourd juice">Karela/Bittergourd juice</option>
+                            <option value="Tomato juice">Tomato juice</option>
+                            <option value="Carrot juice">Carrot juice</option>
+                            <option value="Apple juice">Apple juice</option>
+                            <option value="Palak juice">Palak juice</option>
+                            {% for item in items %}
+                            <option value="{{ item.name }}">{{ item.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn whoop" type="submit" id="button-addon2">Find calories</button>
+                    </div>
+                </form>
+
+                {% if error %}
+                <div class="alert alert-warning">{{ error }}</div>
+                {% elif food %}
+                <h1>{{ food.name | capfirst }} has a total of <strong>{{ food.calories }} Calories</strong>
+                    {% if food.calories > 200 %}
+                    <img src="{% static 'images/shocked.png' %}" class="img-responsive" />
+                    {% endif %}
+                </h1>
+                {% if food.sodium_mg > 1000 %}
+                <div class="alert alert-danger d-flex align-items-center mt-3" role="alert">
+                    <div>
+                        This food contains a high amount of sodium. High Sodium causes severe dehydration and water retention.
+                    </div>
+                </div>
+                {% endif %}
+                {% if food.sugar_g > 100 %}
+                <div class="alert alert-danger d-flex align-items-center mt-3" role="alert">
+                    <div>
+                        This food contains a high amount of sugar. Sugar causes insulin spikes and is a no.1 cause for obesity.
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="row justify-content-center mt-5 mb-5">
+                <div class="col-md-10 caloriescont shadow rounded">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="mt-3 mb-4">Nutritional Values </h2>
+                            <ul>
+                                <li class="servingsize">Serving Size per 100/Grams <span class="float-end"></span></li>
+                                <li>Carbohydrates: <span class="float-end">{{ food.carbohydrates }}</span></li>
+                                <li>Cholesterol: <span class="float-end">{{ food.cholesterol }}</span></li>
+                                <li>Saturated fat: <span class="float-end">{{ food.fat_saturated }}</span></li>
+                                <li>Total Fat: <span class="float-end">{{ food.fat_total }}</span></li>
+                                <li>Fiber Content: <span class="float-end">{{ food.fiber }}</span></li>
+                                <li>Potassium <span class="float-end">{{ food.potassium }}</span></li>
+                                <li>Protein: <span class="float-end">{{ food.protein }}</span></li>
+                                <li>Sodium:<span class="float-end">{{ food.sodium }}</span></li>
+                                <li>Sugar: <span class="float-end">{{ food.sugar }}</span></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mb-5">
+                            <h4 class="mt-3 mb-4">To burn {{ food.calories }} calories you will have to</h4>
+                            <div class="d-flex align-items-center mb-5">
+                                <div class="flex-shrink-0">
+                                    <img src="{% static 'images/running.png' %}" alt="...">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5>Jog</h5>
+                                    <p>you will have to jog for <strong>{{ food.calories | div:378 | mul:60 | floatformat:0 }}</strong> Minutes</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-5">
+                                <div class="flex-shrink-0">
+                                    <img src="{% static 'images/yoga.png' %}" alt="...">
+                                </div>
+                                <div class="flex-grow-1 ms-4">
+                                    <h5>Do Power Yoga</h5>
+                                    <p>you will have to Power Yoga for <strong>{{ food.calories | div:223 | mul:60 | floatformat:0 }}</strong> Minutes</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-5">
+                                <div class="flex-shrink-0">
+                                    <img src="{% static 'images/weightlifter.png' %}" alt="...">
+                                </div>
+                                <div class="flex-grow-1 ms-4">
+                                    <h5>Get a Gym Workout</h5>
+                                    <p>you will have to lift weight for <strong>{{ food.calories | div:483 | mul:60 | floatformat:0 }}</strong> Minutes</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <img src="{% static 'images/walking.png' %}" alt="...">
+                                </div>
+                                <div class="flex-grow-1 ms-1">
+                                    <h5>Go for a Brisk Walk</h5>
+                                    <p>you will have to brisk walk for <strong>{{ food.calories | div:294 | mul:60 | floatformat:0 }}</strong> Minutes</p>
+                                </div>
+                            </div>
+                            <div>
+                                <canvas id="myChart" width="400" height="400"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['carbohydrates', 'Cholesterol', 'Saturated fat', 'Total Fat', 'Fiber Content', 'Potassium', 'Protein', 'Sodium', 'Sugar'],
+                datasets: [{
+                    label: 'Nutritional values of {{ food.name | capfirst }}',
+                    data: [
+                        {{ food.carbohydrates }},
+                        {{ food.cholesterol }},
+                        {{ food.fat_saturated }},
+                        {{ food.fat_total }},
+                        {{ food.fiber }},
+                        {{ food.potassium }},
+                        {{ food.protein }},
+                        {{ food.sodium }},
+                        {{ food.sugar }},
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
